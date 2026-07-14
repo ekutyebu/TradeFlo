@@ -3,26 +3,25 @@
 
 Write-Host "=== TradeFlo Setup ===" -ForegroundColor Cyan
 
-# 1. Create Next.js Frontend
-Write-Host "`n[1/4] Creating Next.js frontend..." -ForegroundColor Yellow
-Set-Location -Path $PSScriptRoot
-npx create-next-app@latest frontend --typescript --tailwind --eslint --app --src-dir --import-alias "@/*" --no-git --yes
-
-# 2. Install frontend dependencies
-Write-Host "`n[2/4] Installing frontend dependencies..." -ForegroundColor Yellow
+# 1. Install frontend dependencies
+Write-Host "`n[1/3] Installing frontend dependencies..." -ForegroundColor Yellow
 Set-Location -Path "$PSScriptRoot\frontend"
-npm install framer-motion recharts @radix-ui/react-dialog @radix-ui/react-select @radix-ui/react-tabs lucide-react date-fns
+npm install
 
-# 3. Create Python virtual environment
-Write-Host "`n[3/4] Creating Python virtual environment..." -ForegroundColor Yellow
+# 2. Create Python virtual environment
+Write-Host "`n[2/3] Creating Python virtual environment..." -ForegroundColor Yellow
 Set-Location -Path "$PSScriptRoot\backend"
 python -m venv .venv
-.\.venv\Scripts\Activate.ps1
+& ".\.venv\Scripts\Activate.ps1"
 pip install -r requirements.txt
 
-# 4. Run database migrations
-Write-Host "`n[4/4] Running database migrations..." -ForegroundColor Yellow
-alembic upgrade head
+# 3. Run database migrations
+Write-Host "`n[3/3] Running database migrations..." -ForegroundColor Yellow
+# Note: SQLAlchemy will automatically create tables on first run, but alembic can be configured here if desired.
+# uvicorn will start and create tables via main.py.
 
 Write-Host "`n=== Setup Complete! ===" -ForegroundColor Green
-Write-Host "Run 'start-backend.ps1' and 'start-frontend.ps1' to start dev servers." -ForegroundColor Cyan
+Write-Host "To run the app, open two terminals and run:" -ForegroundColor Cyan
+Write-Host "  In terminal 1: cd c:\Users\ekuty\Desktop\TradeFlo; .\start-backend.ps1" -ForegroundColor Gray
+Write-Host "  In terminal 2: cd c:\Users\ekuty\Desktop\TradeFlo; .\start-frontend.ps1" -ForegroundColor Gray
+
