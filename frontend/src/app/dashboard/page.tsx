@@ -10,6 +10,8 @@ import { api, type Account, type AnalyticsSummary, type EquityPoint, type Trade,
 import { AlertTriangle, AlertCircle, Info, TrendingUp, Target, Shield, Zap } from 'lucide-react';
 import clsx from 'clsx';
 
+import Link from 'next/link';
+
 export default function DashboardPage() {
   const [account, setAccount] = useState<Account | null>(null);
   const [analytics, setAnalytics] = useState<AnalyticsSummary | null>(null);
@@ -80,10 +82,12 @@ export default function DashboardPage() {
               Create your first trading account to start journaling and tracking your performance.
             </p>
           </div>
-          <button className="btn-primary">
-            <Zap size={14} />
-            Create Account
-          </button>
+          <Link href="/settings">
+            <button className="btn-primary">
+              <Zap size={14} />
+              Create Account
+            </button>
+          </Link>
         </div>
       </AppShell>
     );

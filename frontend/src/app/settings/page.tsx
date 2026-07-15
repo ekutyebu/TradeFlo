@@ -30,7 +30,9 @@ export default function SettingsPage() {
       await api.accounts.update(account.id, form);
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
-    } catch (e) { console.error(e); }
+    } catch (e) {
+      console.warn("Failed to save account settings:", e);
+    }
     setLoading(false);
   };
 
