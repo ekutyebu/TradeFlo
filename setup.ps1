@@ -13,7 +13,7 @@ Write-Host "`n[2/3] Creating Python virtual environment..." -ForegroundColor Yel
 Set-Location -Path "$PSScriptRoot\backend"
 python -m venv .venv
 & ".\.venv\Scripts\Activate.ps1"
-pip install -r requirements.txt
+pip install -r requirements.txt --default-timeout=1000
 
 # 3. Run database migrations
 Write-Host "`n[3/3] Running database migrations..." -ForegroundColor Yellow

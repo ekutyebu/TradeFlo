@@ -38,7 +38,7 @@ export default function DashboardPage() {
         setRecentTrades(tradesData);
         setAlerts(alertsData.alerts);
       } catch (e) {
-        console.error(e);
+        console.warn("Could not load dashboard data. Check if backend is running:", e);
       } finally {
         setLoading(false);
       }
