@@ -1,160 +1,52 @@
-# TradeFlo — Complete Setup Guide
+# TradeFlo — Quick Start Setup Guide 🚀
+
+TradeFlo is fully automated. You only need to verify your prerequisites and double-click one file.
+
+---
 
 ## Prerequisites
 
 Before running TradeFlo, ensure you have:
 - **Node.js** v18+ ([nodejs.org](https://nodejs.org))
 - **Python** 3.10+ ([python.org](https://python.org))
-- **PostgreSQL** 14+ ([postgresql.org](https://postgresql.org))
+- **PostgreSQL** 14+ (Installed on port 5432)
 
 ---
 
-## Step 1 — Database Setup
+## Step 1 — Setup Environment variables
 
-### Create the PostgreSQL database
-
-Open psql or pgAdmin and run:
-```sql
-CREATE DATABASE tradeflo;
-CREATE USER tradeflo_user WITH PASSWORD 'yourpassword';
-GRANT ALL PRIVILEGES ON DATABASE tradeflo TO tradeflo_user;
-```
-
-Or simply use the default `postgres` user:
-```sql
-CREATE DATABASE tradeflo;
-```
-
----
-
-## Step 2 — Backend Setup
-
-```powershell
-# Navigate to backend
-cd backend
-
-# Create virtual environment
-python -m venv .venv
-
-# Activate it
-.\.venv\Scripts\Activate.ps1
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Copy env file and configure
-Copy-Item .env.example .env
-```
-
-Edit `backend/.env`:
+Ensure your PostgreSQL password is set in `backend/.env`. By default, we have configured it with:
 ```env
-DATABASE_URL=postgresql://postgres:yourpassword@localhost:5432/tradeflo
-GEMINI_API_KEY=your-gemini-api-key  # Get free at aistudio.google.com
+DATABASE_URL=postgresql://postgres:Man2001%40@localhost:5432/tradeflo
 ```
-
-### Run migrations (creates all tables automatically)
-```powershell
-# Tables are created automatically on first startup via SQLAlchemy
-# No manual migration needed for initial setup
-uvicorn main:app --reload --port 8000
-```
-
-Backend will be live at: **http://localhost:8000**
-API docs at: **http://localhost:8000/docs**
+*(If your PostgreSQL password ever changes, open `backend/.env` and update it there, percent-encoding `@` as `%40`).*
 
 ---
 
-## Step 3 — Frontend Setup
+## Step 2 — Double Click `start.bat`
 
-```powershell
-# Navigate to frontend
-cd frontend
+At the root of the project, double-click `start.bat` (or run it in your terminal: `start.bat`).
 
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
-```
-
-Frontend will be live at: **http://localhost:3000**
+This script will automatically:
+1. Check if `node_modules` is installed in `/frontend`. If not, it will run `npm install`.
+2. Check if a Python virtual environment (`.venv`) is created in `/backend`. If not, it will build it and install all pip dependencies from `requirements.txt`.
+3. Launch your **FastAPI Backend server** in a new window.
+4. Launch your **Next.js Frontend server** in a new window.
+5. Create the PostgreSQL database `tradeflo` automatically on your server if it does not exist.
+6. Verify and compile the entire database schema.
+7. Run the **Monthly Database Backup** script to save snapshots of your data in `/backups` folder.
 
 ---
 
-## Step 4 — Create Your First Account
+## Step 3 — Access TradeFlo
 
-1. Open **http://localhost:3000**
-2. You'll be redirected to the Dashboard
-3. Go to **Settings** (`/settings`)
-4. Fill in your account details:
-   - Account Name (e.g. "FTMO Challenge")
-   - Broker name
-   - Initial balance
-   - Risk limits (daily loss %, max drawdown %, risk per trade %)
-5. Click **Create Account**
+Once both windows are running, open your browser:
+* **Frontend UI:** [http://localhost:3000](http://localhost:3000)
+* **Backend API Docs:** [http://localhost:8000/docs](http://localhost:8000/docs)
 
 ---
 
-## Step 5 — Log Your First Trade
-
-1. Navigate to **Journal** (`/journal`)
-2. Click **Log Trade**
-3. Fill in the trade form:
-   - Symbol (EURUSD, XAUUSD, etc.)
-   - Direction (BUY/SELL)
-   - Entry/Exit prices
-   - Lot size, P&L, R:R ratio
-   - Setup tag and notes
-4. Click **Save Trade**
-
-The Dashboard and Analytics pages will immediately update with your data.
-
----
-
-## Step 6 — AI Coach
-
-1. Navigate to **AI Coach** (`/ai-coach`)
-2. Try starter prompts like "Review my performance"
-3. For full AI responses, add your Gemini API key to `backend/.env`
-
-**Get a free Gemini API key:**
-Visit [aistudio.google.com](https://aistudio.google.com) → API Keys → Create
-
----
-
-## Running Both Servers
-
-Open two PowerShell windows:
-
-**Terminal 1 (Backend):**
-```powershell
-.\start-backend.ps1
-```
-
-**Terminal 2 (Frontend):**
-```powershell
-.\start-frontend.ps1
-```
-
----
-
-## Project Structure
-
-```
-TradeFlo/
-├── frontend/               # Next.js App (port 3000)
-│   └── src/
-│       ├── app/            # Pages (dashboard, chart, journal, etc.)
-│       ├── components/     # Reusable components
-│       └── lib/            # API client + types
-├── backend/                # FastAPI App (port 8000)
-│   ├── ai/                 # AI engine (stats, patterns, risk, chat)
-│   ├── routers/            # API route handlers
-│   ├── models.py           # Database models
-│   ├── schemas.py          # Pydantic schemas
-│   ├── main.py             # FastAPI entrypoint
-│   └── .env                # Your configuration
-├── docs/                   # Documentation
-├── start-backend.ps1       # Backend startup script
-└── start-frontend.ps1      # Frontend startup script
-```
+## Monthly Database Backups 💾
+* The app automatically runs a check on startup every month.
+* If your database has data, it creates a snapshot file in `/backups` at the root folder of the project (`backup_YYYY_MM.sql` for PostgreSQL or `backup_YYYY_MM.db` if falling back to SQLite).
+* You do not need to set up any cron jobs or triggers; the system manages it completely.

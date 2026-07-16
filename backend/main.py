@@ -46,6 +46,13 @@ app.include_router(notebook.router, prefix="/api/notebook", tags=["Notebook"])
 app.include_router(backtest.router, prefix="/api/backtest", tags=["Backtesting"])
 
 
+from backup import run_monthly_backup
+
+@app.on_event("startup")
+def startup_event():
+    run_monthly_backup()
+
+
 @app.get("/", tags=["Health"])
 def root():
     return {"status": "TradeFlo API is running", "version": "1.0.0", "timestamp": datetime.utcnow()}
