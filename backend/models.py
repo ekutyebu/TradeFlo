@@ -115,3 +115,32 @@ class ChatMessage(Base):
     content = Column(Text, nullable=False)
     context_type = Column(String(50), default="general")  # "review", "counseling", "risk", "general"
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+
+class NotebookPage(Base):
+    __tablename__ = "notebook_pages"
+
+    id = Column(Integer, primary_key=True, index=True)
+    account_id = Column(Integer, ForeignKey("accounts.id"), nullable=False)
+    title = Column(String(200), nullable=False)
+    content = Column(Text, nullable=False)
+    category = Column(String(50), default="Strategy")  # Strategy, Checklist, Rules, Review
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+
+class BacktestRun(Base):
+    __tablename__ = "backtest_runs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    account_id = Column(Integer, ForeignKey("accounts.id"), nullable=False)
+    strategy_name = Column(String(200), nullable=False)
+    symbol = Column(String(20), nullable=False)
+    timeframe = Column(String(20), nullable=False)
+    trades_count = Column(Integer, nullable=False)
+    wins = Column(Integer, nullable=False)
+    losses = Column(Integer, nullable=False)
+    total_pnl = Column(Float, default=0.0)
+    notes = Column(Text)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+

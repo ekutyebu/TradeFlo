@@ -187,6 +187,7 @@ class AnalyticsSummary(BaseModel):
     best_symbol: Optional[str]
     best_day_of_week: Optional[str]
     best_session: Optional[str]
+    edge_score: float
 
 class PatternInsight(BaseModel):
     category: str
@@ -237,3 +238,60 @@ class MT5OrderRequest(BaseModel):
     stop_loss: Optional[float] = None
     take_profit: Optional[float] = None
     comment: Optional[str] = "TradeFlo"
+
+
+# ─── Notebook Schemas ──────────────────────────────────────────────────────────
+
+class NotebookPageCreate(BaseModel):
+    account_id: int
+    title: str
+    content: str
+    category: str = "Strategy"
+
+class NotebookPageUpdate(BaseModel):
+    title: Optional[str] = None
+    content: Optional[str] = None
+    category: Optional[str] = None
+
+class NotebookPageResponse(BaseModel):
+    id: int
+    account_id: int
+    title: str
+    content: str
+    category: str
+    created_at: datetime
+    updated_at: Optional[datetime]
+
+    class Config:
+        from_attributes = True
+
+
+# ─── Backtest Schemas ──────────────────────────────────────────────────────────
+
+class BacktestRunCreate(BaseModel):
+    account_id: int
+    strategy_name: str
+    symbol: str
+    timeframe: str
+    trades_count: int
+    wins: int
+    losses: int
+    total_pnl: float = 0.0
+    notes: Optional[str] = None
+
+class BacktestRunResponse(BaseModel):
+    id: int
+    account_id: int
+    strategy_name: str
+    symbol: str
+    timeframe: str
+    trades_count: int
+    wins: int
+    losses: int
+    total_pnl: float
+    notes: Optional[str]
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+

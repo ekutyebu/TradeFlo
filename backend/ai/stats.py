@@ -217,3 +217,53 @@ def avg_trade_duration_minutes(entry_times, exit_times) -> float:
             diff = (exit_t - entry).total_seconds() / 60
             durations.append(diff)
     return mean(durations)
+
+
+def calculate_edge_score(
+    pnl_list: List[float],
+    max_dd_pct: float,
+    limit_dd_pct: float,
+    daily_limit_breached: bool = False
+) -> float:
+    """
+    Computes an Edge Score from 0 to 100 representing trading discipline and edge.
+    Formula:
+    Score = (Win Rate * 40) + (Profit Factor Rating * 35) + (Drawdown Adherence * 25)
+    Deducts heavily if limits are breached.
+    """
+    if not pnl_list:
+        return 0.0
+
+    # 1. Win Rate contribution (max 40)
+    wr = win_rate(pnl_list)
+    wr_score = wr * 40
+
+    # 2. Profit Factor contribution (max 35)
+    pf = profit_factor(pnl_list)
+    if pf == float("inf") or pf > 3.0:
+        pf_score = 35.0
+    elif pf < 1.0:
+        pf_score = pf * 15.0  # severely penalize negative systems
+    else:
+        pf_score = 15.0 + ((pf - 1.0) / 2.0) * 20.0  # linear scale 1.0 to 3.0
+    pf_score = max(0.0, min(pf_score, 35.0))
+
+    # 3. Drawdown Adherence contribution (max 25)
+    if limit_dd_pct <= 0:
+        dd_score = 25.0
+    else:
+        dd_ratio = max_dd_pct / limit_dd_pct
+        if dd_ratio >= 1.0:
+            dd_score = 0.0
+        else:
+            dd_score = (1.0 - dd_ratio) * 25.0
+    dd_score = max(0.0, min(dd_score, 25.0))
+
+    total_score = wr_score + pf_score + dd_score
+
+    # Penalize if daily loss limit was breached
+    if daily_limit_breached:
+        total_score *= 0.50  # Cut score in half as discipline penalty
+
+    return round(max(0.0, min(total_score, 100.0)), 1)
+

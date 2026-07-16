@@ -6,14 +6,19 @@ import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard, LineChart, BookOpen, BarChart2,
   Bot, Settings, TrendingUp, Zap, ChevronRight,
+  Flame, Play, Brain, GraduationCap, FileText,
 } from 'lucide-react';
 import clsx from 'clsx';
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard',  icon: LayoutDashboard },
   { href: '/chart',     label: 'Chart',      icon: LineChart },
+  { href: '/trade',     label: 'Trade',      icon: Flame },
   { href: '/journal',   label: 'Journal',    icon: BookOpen },
-  { href: '/analytics', label: 'Analytics',  icon: BarChart2 },
+  { href: '/backtest',  label: 'Backtesting', icon: Play },
+  { href: '/notebook',  label: 'Notebook',   icon: FileText },
+  { href: '/sanctuary', label: 'Sanctuary',  icon: Brain },
+  { href: '/academy',   label: 'Academy',    icon: GraduationCap },
   { href: '/ai-coach',  label: 'AI Coach',   icon: Bot },
 ];
 

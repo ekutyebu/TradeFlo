@@ -13,7 +13,7 @@ from config import settings
 from database import engine, Base
 
 # Import all routers
-from routers import accounts, trades, sessions, analytics, ai_coach, market
+from routers import accounts, trades, sessions, analytics, ai_coach, market, notebook, backtest
 
 # Create all tables on startup
 Base.metadata.create_all(bind=engine)
@@ -42,6 +42,8 @@ app.include_router(sessions.router, prefix="/api/sessions", tags=["Sessions"])
 app.include_router(analytics.router, prefix="/api/analytics", tags=["Analytics"])
 app.include_router(ai_coach.router, prefix="/api/ai", tags=["AI Coach"])
 app.include_router(market.router, prefix="/api/market", tags=["Market"])
+app.include_router(notebook.router, prefix="/api/notebook", tags=["Notebook"])
+app.include_router(backtest.router, prefix="/api/backtest", tags=["Backtesting"])
 
 
 @app.get("/", tags=["Health"])

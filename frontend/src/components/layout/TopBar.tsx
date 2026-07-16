@@ -7,8 +7,12 @@ import { usePathname } from 'next/navigation';
 const PAGE_TITLES: Record<string, { title: string; subtitle: string }> = {
   '/dashboard':  { title: 'Dashboard',       subtitle: 'Your trading overview' },
   '/chart':      { title: 'Chart',           subtitle: 'TradingView Advanced Charts' },
+  '/trade':      { title: 'Trade Execution', subtitle: 'Live execution panel' },
   '/journal':    { title: 'Trade Journal',   subtitle: 'Log and review your trades' },
-  '/analytics':  { title: 'Analytics',       subtitle: 'Deep performance insights' },
+  '/backtest':  { title: 'Backtesting',     subtitle: 'Test strategies on historical data' },
+  '/notebook':  { title: 'Notebook',        subtitle: 'Strategies, checklists and reviews' },
+  '/sanctuary':  { title: 'Sanctuary',       subtitle: 'Trading psychology and mindfulness' },
+  '/academy':    { title: 'Academy',         subtitle: 'Smart Money Concepts & Education' },
   '/ai-coach':   { title: 'AI Coach',        subtitle: 'Powered by TradeFlo intelligence' },
   '/settings':   { title: 'Settings',        subtitle: 'Configure your workspace' },
 };

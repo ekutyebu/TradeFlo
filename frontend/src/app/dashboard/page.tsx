@@ -93,6 +93,20 @@ export default function DashboardPage() {
     );
   }
 
+  const score = analytics?.edge_score ?? 0;
+  let scoreStatus = { label: 'No Data', desc: 'Log trades to calculate your Edge Score.', color: 'text-text-muted' };
+  if (analytics && analytics.total_trades > 0) {
+    if (score >= 80) {
+      scoreStatus = { label: 'Elite Trader', desc: 'Exemplary risk adherence, high consistency.', color: 'text-primary' };
+    } else if (score >= 60) {
+      scoreStatus = { label: 'Disciplined', desc: 'Solid consistency. Keep executing details.', color: 'text-primary' };
+    } else if (score >= 40) {
+      scoreStatus = { label: 'Average Edge', desc: 'Maintain strict risk limits. Watch drawdowns.', color: 'text-amber-400' };
+    } else {
+      scoreStatus = { label: 'Tilted / Risky', desc: 'Revenge danger! Visit Sanctuary to reset.', color: 'text-red-400' };
+    }
+  }
+
   return (
     <AppShell
       accountName={account.name}
@@ -127,50 +141,109 @@ export default function DashboardPage() {
           </motion.div>
         )}
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <StatCard
-            label="Win Rate"
-            value={analytics ? `${(analytics.win_rate * 100).toFixed(1)}%` : '—'}
-            subtext={analytics ? `${analytics.total_trades} trades` : 'No data'}
-            trend={analytics && analytics.win_rate > 0.5 ? 'up' : analytics && analytics.win_rate > 0 ? 'down' : 'neutral'}
-            highlight={!!(analytics && analytics.win_rate > 0.5)}
-            delay={0}
-          />
-          <StatCard
-            label="Profit Factor"
-            value={analytics ? analytics.profit_factor === Infinity ? '∞' : analytics.profit_factor.toFixed(2) : '—'}
-            subtext="gross profit / loss"
-            valueColor={analytics && analytics.profit_factor >= 1.5 ? 'primary' : analytics && analytics.profit_factor < 1 ? 'red' : 'default'}
-            delay={0.05}
-          />
-          <StatCard
-            label="Expected Value"
-            value={analytics ? `${analytics.expected_value >= 0 ? '+' : ''}${analytics.expected_value.toFixed(2)}` : '—'}
-            suffix={account.currency}
-            valueColor={analytics && analytics.expected_value > 0 ? 'primary' : 'red'}
-            subtext="per trade"
-            delay={0.1}
-          />
-          <StatCard
-            label="Max Drawdown"
-            value={analytics ? `${analytics.max_drawdown_pct.toFixed(1)}%` : '—'}
-            valueColor={analytics && analytics.max_drawdown_pct > account.max_drawdown_pct ? 'red' : analytics && analytics.max_drawdown_pct > account.max_drawdown_pct * 0.75 ? 'amber' : 'default'}
-            subtext={`Limit: ${account.max_drawdown_pct}%`}
-            delay={0.15}
-          />
-        </div>
+        {/* Dashboard Top Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 items-stretch">
+          {/* Left Column: Stats Grid */}
+          <div className="lg:col-span-3 flex flex-col gap-4">
+            {/* First Stats Row */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 flex-1">
+              <StatCard
+                label="Win Rate"
+                value={analytics ? `${(analytics.win_rate * 100).toFixed(1)}%` : '—'}
+                subtext={analytics ? `${analytics.total_trades} trades` : 'No data'}
+                trend={analytics && analytics.win_rate > 0.5 ? 'up' : analytics && analytics.win_rate > 0 ? 'down' : 'neutral'}
+                highlight={!!(analytics && analytics.win_rate > 0.5)}
+                delay={0}
+              />
+              <StatCard
+                label="Profit Factor"
+                value={analytics ? analytics.profit_factor === Infinity ? '∞' : analytics.profit_factor.toFixed(2) : '—'}
+                subtext="gross profit / loss"
+                valueColor={analytics && analytics.profit_factor >= 1.5 ? 'primary' : analytics && analytics.profit_factor < 1 ? 'red' : 'default'}
+                delay={0.05}
+              />
+              <StatCard
+                label="Expected Value"
+                value={analytics ? `${analytics.expected_value >= 0 ? '+' : ''}${analytics.expected_value.toFixed(2)}` : '—'}
+                suffix={account.currency}
+                valueColor={analytics && analytics.expected_value > 0 ? 'primary' : 'red'}
+                subtext="per trade"
+                delay={0.1}
+              />
+              <StatCard
+                label="Max Drawdown"
+                value={analytics ? `${analytics.max_drawdown_pct.toFixed(1)}%` : '—'}
+                valueColor={analytics && analytics.max_drawdown_pct > account.max_drawdown_pct ? 'red' : analytics && analytics.max_drawdown_pct > account.max_drawdown_pct * 0.75 ? 'amber' : 'default'}
+                subtext={`Limit: ${account.max_drawdown_pct}%`}
+                delay={0.15}
+              />
+            </div>
 
-        {/* Second row */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <StatCard label="Total P&L" value={analytics ? `${analytics.total_pnl >= 0 ? '+' : ''}${analytics.total_pnl.toFixed(2)}` : '—'}
-            suffix={account.currency} valueColor={analytics && analytics.total_pnl >= 0 ? 'primary' : 'red'} delay={0.2} />
-          <StatCard label="Avg R:R" value={analytics ? `${analytics.avg_rr.toFixed(2)}R` : '—'}
-            subtext="realized" delay={0.25} />
-          <StatCard label="Win Streak" value={analytics?.longest_win_streak ?? '—'}
-            subtext="longest" delay={0.3} />
-          <StatCard label="Best Symbol" value={analytics?.best_symbol ?? '—'}
-            subtext={analytics?.best_session ? `${analytics.best_session} session` : undefined} delay={0.35} />
+            {/* Second Stats Row */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 flex-1">
+              <StatCard label="Total P&L" value={analytics ? `${analytics.total_pnl >= 0 ? '+' : ''}${analytics.total_pnl.toFixed(2)}` : '—'}
+                suffix={account.currency} valueColor={analytics && analytics.total_pnl >= 0 ? 'primary' : 'red'} delay={0.2} />
+              <StatCard label="Avg R:R" value={analytics ? `${analytics.avg_rr.toFixed(2)}R` : '—'}
+                subtext="realized" delay={0.25} />
+              <StatCard label="Win Streak" value={analytics?.longest_win_streak ?? '—'}
+                subtext="longest" delay={0.3} />
+              <StatCard label="Best Symbol" value={analytics?.best_symbol ?? '—'}
+                subtext={analytics?.best_session ? `${analytics.best_session} session` : undefined} delay={0.35} />
+            </div>
+          </div>
+
+          {/* Right Column: Edge Score Gauge */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4, delay: 0.2 }}
+            className="lg:col-span-1 glass-card p-5 flex flex-col items-center justify-center text-center border-primary/20 bg-gradient-radial from-primary/5 to-transparent h-full min-h-[220px]"
+            style={{ boxShadow: '0 0 24px rgba(16,185,129,0.06)' }}
+          >
+            <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider mb-3">Edge Rating</span>
+            
+            {/* SVG Circle */}
+            <div className="relative w-28 h-28 flex items-center justify-center">
+              <svg className="w-full h-full transform -rotate-90">
+                <circle
+                  cx="56"
+                  cy="56"
+                  r="46"
+                  stroke="#1E2028"
+                  strokeWidth="8"
+                  fill="transparent"
+                />
+                <circle
+                  cx="56"
+                  cy="56"
+                  r="46"
+                  stroke={score >= 60 ? '#10B981' : score >= 40 ? '#F59E0B' : '#EF4444'}
+                  strokeWidth="8"
+                  fill="transparent"
+                  strokeDasharray={289.0}
+                  strokeDashoffset={289.0 - (289.0 * score) / 100}
+                  strokeLinecap="round"
+                  className="transition-all duration-1000 ease-out"
+                  style={{ filter: `drop-shadow(0 0 6px ${score >= 60 ? 'rgba(16,185,129,0.4)' : score >= 40 ? 'rgba(245,158,11,0.4)' : 'rgba(239,68,68,0.4)'})` }}
+                />
+              </svg>
+              <div className="absolute text-center">
+                <span className="text-3xl font-black text-text-primary tracking-tighter">
+                  {score.toFixed(0)}
+                </span>
+                <span className="text-[10px] text-text-muted block font-semibold">SCORE</span>
+              </div>
+            </div>
+
+            <div className="mt-4">
+              <span className={`text-xs font-black uppercase tracking-widest ${scoreStatus.color}`}>
+                {scoreStatus.label}
+              </span>
+              <p className="text-[11px] text-text-muted mt-1 leading-relaxed max-w-[160px] mx-auto">
+                {scoreStatus.desc}
+              </p>
+            </div>
+          </motion.div>
         </div>
 
         {/* Equity Curve */}

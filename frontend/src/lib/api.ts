@@ -73,6 +73,24 @@ export const api = {
   market: {
     price: (symbol: string) => request<MarketPrice>(`/api/market/price/${symbol}`),
   },
+
+  notebook: {
+    list: (accountId: number, category?: string) =>
+      request<NotebookPage[]>(`/api/notebook/?account_id=${accountId}${category ? '&category=' + category : ''}`),
+    get: (id: number) => request<NotebookPage>(`/api/notebook/${id}`),
+    create: (data: Partial<NotebookPage>) =>
+      request<NotebookPage>('/api/notebook/', { method: 'POST', body: JSON.stringify(data) }),
+    update: (id: number, data: Partial<NotebookPage>) =>
+      request<NotebookPage>(`/api/notebook/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+    delete: (id: number) => request<void>(`/api/notebook/${id}`, { method: 'DELETE' }),
+  },
+
+  backtest: {
+    list: (accountId: number) => request<BacktestRun[]>(`/api/backtest/?account_id=${accountId}`),
+    create: (data: Partial<BacktestRun>) =>
+      request<BacktestRun>('/api/backtest/', { method: 'POST', body: JSON.stringify(data) }),
+    delete: (id: number) => request<void>(`/api/backtest/${id}`, { method: 'DELETE' }),
+  },
 };
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -152,6 +170,7 @@ export interface AnalyticsSummary {
   best_symbol?: string;
   best_day_of_week?: string;
   best_session?: string;
+  edge_score: number;
 }
 
 export interface EquityPoint {
@@ -209,4 +228,28 @@ export interface MarketPrice {
   bid: number;
   ask: number;
   source: string;
+}
+
+export interface NotebookPage {
+  id: number;
+  account_id: number;
+  title: string;
+  content: string;
+  category: string;
+  created_at: string;
+  updated_at?: string;
+}
+
+export interface BacktestRun {
+  id: number;
+  account_id: number;
+  strategy_name: string;
+  symbol: string;
+  timeframe: string;
+  trades_count: number;
+  wins: number;
+  losses: number;
+  total_pnl: number;
+  notes?: string;
+  created_at: string;
 }

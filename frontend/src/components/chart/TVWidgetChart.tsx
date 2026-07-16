@@ -34,7 +34,7 @@ export default function TVWidgetChart({
           hide_side_toolbar: false,    // Set to false to show complete drawing tools toolbar!
           allow_symbol_change: true,
           container_id: 'tv-chart-container',
-          studies: [],
+          studies: ["Volume@tv-basicstudies"],
         });
       }
     };

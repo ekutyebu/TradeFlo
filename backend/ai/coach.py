@@ -8,6 +8,7 @@ from ai.stats import (
     win_rate, profit_factor, expected_value, max_drawdown,
     sharpe_ratio, kelly_criterion, z_score_streak, win_loss_streaks,
     monte_carlo_drawdown, avg_trade_duration_minutes, mean,
+    calculate_edge_score,
 )
 from ai.patterns import generate_insights
 from ai.risk import evaluate_all_risks
@@ -89,6 +90,7 @@ def compute_analytics(account, trades, sessions) -> dict:
             "avg_trade_duration_minutes": 0.0,
             "best_setup": None, "best_symbol": None,
             "best_day_of_week": None, "best_session": None,
+            "edge_score": 0.0,
         }
 
     wins = [p for p in pnl_list if p > 0]
@@ -112,6 +114,20 @@ def compute_analytics(account, trades, sessions) -> dict:
     total_pnl = sum(pnl_list)
     total_pnl_pct = total_pnl / account.initial_balance * 100 if account.initial_balance else 0
 
+    # Calculate edge score
+    # Check if daily loss was breached today
+    today = datetime.utcnow().date()
+    today_pnl = sum(t["pnl"] for t in trade_dicts if t["entry_time"] and t["entry_time"].date() == today)
+    daily_limit = account.current_balance * (account.max_daily_loss_pct / 100)
+    daily_limit_breached = (today_pnl < 0) and (abs(today_pnl) >= daily_limit)
+
+    edge_score_val = calculate_edge_score(
+        pnl_list=pnl_list,
+        max_dd_pct=dd_pct * 100,
+        limit_dd_pct=account.max_drawdown_pct,
+        daily_limit_breached=daily_limit_breached
+    )
+
     return {
         "account_id": account.id,
         "total_trades": len(closed_trades),
@@ -134,6 +150,7 @@ def compute_analytics(account, trades, sessions) -> dict:
         "best_symbol": sym.get("best_symbol"),
         "best_day_of_week": dow.get("best_day"),
         "best_session": sess.get("best_session"),
+        "edge_score": edge_score_val,
     }
 
 
