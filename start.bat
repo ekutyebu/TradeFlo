@@ -52,4 +52,17 @@ echo TradeFlo is booting up!
 echo   - Backend API running on http://localhost:8000
 echo   - Frontend App running on http://localhost:3000
 echo.
+
+:: Prompt to run DB Studio
+set /p run_db="Do you want to launch Database Studio? (y/n): "
+if /i "%run_db%"=="y" (
+    echo.
+    echo Launching Database Studio...
+    :: Attempt to launch pgAdmin 4 or DBeaver from PATH or default Windows installation paths
+    start pgadmin4.exe 2>nul || start dbeaver.exe 2>nul || start "" "C:\Program Files\pgAdmin 4\bin\pgAdmin4.exe" 2>nul || start "" "C:\Program Files\pgAdmin 4\v8\runtime\pgAdmin4.exe" 2>nul || start "" "C:\Program Files\DBeaver\dbeaver.exe" 2>nul || start "" "http://localhost:5050"
+)
+
+echo.
+echo Boot sequence complete. Close the backend/frontend command prompts to stop the app.
+echo.
 pause
